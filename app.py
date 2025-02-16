@@ -15,6 +15,13 @@ products = [
     }
     ]
 
+next_id = len(products) + 1
+
+def get_next_id():
+    global next_id
+    next_id += 1
+    return next_id - 1
+
 @app.route('/')
 def hello():
     return '<h1>Hello World!<h1>'
@@ -30,10 +37,19 @@ def all_products():
 # Get product with id == 1
 @app.route('/products/<int:id>')
 def one_product(id):
-    # print(type(id))
+    # print(type(id)) # DEBUG
     filtered_products = list(filter(lambda p: p['id'] == id, products))
-    # print(list(filtered_products))
+    # print(list(filtered_products)) # DEBUG
     return filtered_products[0]
+
+# POST /products (create a new product)
+@app.route('/products', methods=['POST'])
+def create_product():
+    global next_id
+    product = request.get_json()
+    product['id'] = get_next_id()
+    products.append(product)
+    return product
 
 @app.route('/can-vote')
 def can_vote():
